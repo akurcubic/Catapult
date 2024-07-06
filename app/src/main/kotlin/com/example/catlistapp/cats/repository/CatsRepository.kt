@@ -4,6 +4,7 @@ import com.example.catlistapp.cats.api.CatsApi
 import com.example.catlistapp.cats.api.model.CatApiModel
 import com.example.catlistapp.networking.retrofit
 
+
 object CatsRepository {
 
     private val catsApi: CatsApi = retrofit.create(CatsApi::class.java)
@@ -21,4 +22,9 @@ object CatsRepository {
 
         return cat
     }
+
+    suspend fun getCatPhotos(catId: String) = catsApi.getCatImages(breedIds = catId)
+
+
+
 }

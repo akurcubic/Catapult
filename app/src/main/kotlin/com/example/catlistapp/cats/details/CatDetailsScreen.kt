@@ -43,7 +43,8 @@ import com.example.catlistapp.cats.details.model.CatDetailsUiModel
 
 fun NavGraphBuilder.catDetails(
     route: String,
-    navController: NavController
+    navController: NavController,
+    onGalleryButtonClick: (String) -> Unit,
 ) = composable(
     route = route,
     arguments = listOf(navArgument("catId") { type = NavType.StringType })
@@ -68,7 +69,8 @@ fun NavGraphBuilder.catDetails(
         onClose = {
             navController.navigateUp()
         },
-        context = context
+        context = context,
+        onGalleryButtonClick = onGalleryButtonClick
     )
 }
 
@@ -79,7 +81,8 @@ fun NavGraphBuilder.catDetails(
 fun CatDetailsScreen(
     state: CatDetailsContract.CatDetailsState,
     onClose: () -> Unit,
-    context: Context
+    context: Context,
+    onGalleryButtonClick: (String) -> Unit,
 ) {
     Scaffold(
         topBar = {
@@ -143,6 +146,15 @@ fun CatDetailsScreen(
 
 
                         Text(buildBoldText("Description: ", cat.description), style = MaterialTheme.typography.bodyLarge, color = Color.Black)
+                        Spacer(modifier = Modifier.height(8.dp))
+                        Button(
+                            onClick = {
+                                onGalleryButtonClick(cat.id)
+                            },
+                            modifier = Modifier.align(Alignment.Start)
+                        ) {
+                            Text(text = "Gallery")
+                        }
                         Spacer(modifier = Modifier.height(8.dp))
                         Text(buildBoldText("Countries of origin: ", cat.origin), style = MaterialTheme.typography.bodyLarge, color = Color.Black)
                         Spacer(modifier = Modifier.height(8.dp))
@@ -252,6 +264,7 @@ private fun PreviewCatsList(
     CatDetailsScreen(
         state = catDetailsState,
         onClose = {},
-        context = LocalContext.current
+        context = LocalContext.current,
+        onGalleryButtonClick = {}
     )
 }

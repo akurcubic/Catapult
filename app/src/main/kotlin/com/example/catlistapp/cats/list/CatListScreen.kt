@@ -27,8 +27,9 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
-import com.example.catlistapp.R
+
 import com.example.catlistapp.cats.list.model.CatListUiModel
+import com.example.catlistapp.R
 
 fun NavGraphBuilder.cats(
     route: String,
