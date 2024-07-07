@@ -7,8 +7,9 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.catlistapp.cats.details.catDetails
 import com.example.catlistapp.cats.gallery.catGallery
+import com.example.catlistapp.cats.gallery.photo.catPhotoScreen
 import com.example.catlistapp.cats.list.cats
-import com.example.catlistapp.cats.photo.catPhoto
+
 
 @Composable
 fun CatNavigation() {
@@ -25,7 +26,10 @@ fun CatNavigation() {
             }
         )
         catDetails(
-            route = "cat_details/{catId}",
+            route = "cat_details/{id}",
+            arguments = listOf(navArgument("id") {
+                type = NavType.StringType
+            }),
             navController = navController,
             onGalleryButtonClick = {
                 navController.navigate(route = "cat_details/gallery/$it")
@@ -33,32 +37,30 @@ fun CatNavigation() {
         )
 
         catGallery(
-            route = "cat_details/gallery/{catId}",
+            route = "cat_details/gallery/{id}",
             arguments = listOf(
-                navArgument(name = "catId") {
+                navArgument(name = "id") {
                     nullable = false
                     type = NavType.StringType
                 }
             ),
-            onPhotoClick = {
-                navController.navigate(route = "photo/$it")
+            onPhotoClick = {id,photoIndex->
+                navController.navigate(route = "photo/${id}/${photoIndex}")
             },
             onClose = {
                 navController.navigateUp()
             }
         )
 
-        catPhoto(
-            route = "photo/{catId}",
-            arguments = listOf(
-                navArgument(name = "catId") {
-                    nullable = false
-                    type = NavType.StringType
-                }
-            ),
-            onClose = {
-                navController.navigateUp()
-            }
+
+        catPhotoScreen(
+            route = "photo/{id}/{photoIndex}",
+            navController = navController,
+            arguments = listOf(navArgument("id") {
+                type = NavType.StringType
+            }, navArgument("photoIndex") {
+                type = NavType.IntType
+            }),
         )
 
     }

@@ -1,51 +1,46 @@
 package com.example.catlistapp.cats.details
 
-import android.util.Log
+
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.catlistapp.cats.api.model.CatApiModel
 import com.example.catlistapp.cats.details.model.CatDetailsUiModel
+import com.example.catlistapp.cats.gallery.photo.catId
 import com.example.catlistapp.cats.repository.CatsRepository
-import kotlinx.coroutines.Dispatchers
+import dagger.hilt.android.lifecycle.HiltViewModel
+
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
-import java.io.IOException
 
-class CatDetailsViewModel(
-    private val catId: String,
-    private val catsRepository: CatsRepository = CatsRepository
+import javax.inject.Inject
+
+@HiltViewModel
+class CatDetailsViewModel @Inject constructor(
+
+    savedStateHandle: SavedStateHandle,
+    private val catsRepository: CatsRepository
 ): ViewModel(){
 
-    private val _state = MutableStateFlow(CatDetailsContract.CatDetailsState())
+    private val catId: String = savedStateHandle.catId
+    private val _state = MutableStateFlow(CatDetailsContract.CatDetailsState(catId = catId))
     val state = _state.asStateFlow()
     private fun setState(reducer: CatDetailsContract.CatDetailsState.() -> CatDetailsContract.CatDetailsState) = _state.update(reducer)
 
     init{
 
-        fetchCatDetails()
+        observeCatDetails()
     }
 
 
-    private fun fetchCatDetails() {
+
+    private fun observeCatDetails() {
         viewModelScope.launch {
             setState { copy(loading = true) }
-            try {
-                val cat = withContext(Dispatchers.IO) {
-                    catsRepository.fetchCatDetails(id = catId)
-                }
-                val catDetailsUiModel = cat.asCatDetailsUiModel()
-
-                // Log the cat details
-                Log.d("CatDetailsViewModel", "Cat details fetched: $catDetailsUiModel")
-
-                setState { copy(cat = catDetailsUiModel) }
-            } catch (error: IOException) {
-                Log.e("CatDetailsViewModel", "Error fetching cat: $error")
-            } finally {
-                setState { copy(loading = false) }
+            catsRepository.getCatByIdFlow(id = catId).collect { catInfoDetail ->
+                setState { copy(cat = catInfoDetail, loading = false) }
             }
         }
     }

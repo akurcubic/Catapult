@@ -24,12 +24,14 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 
 import com.example.catlistapp.cats.list.model.CatListUiModel
 import com.example.catlistapp.R
+import com.example.catlistapp.cats.api.model.CatApiModel
 
 fun NavGraphBuilder.cats(
     route: String,
@@ -37,7 +39,7 @@ fun NavGraphBuilder.cats(
 ) = composable(
     route = route
 ) {
-    val catListViewModel = viewModel<CatListViewModel>()
+    val catListViewModel: CatListViewModel = hiltViewModel()
 
     val state = catListViewModel.state.collectAsState()
 
@@ -138,7 +140,7 @@ fun CatListScreen(
 
 @Composable
 fun CatCard(
-    cat: CatListUiModel,
+    cat: CatApiModel,
     onCatClick: (String) -> Unit,
 ) {
     Card(
@@ -146,7 +148,10 @@ fun CatCard(
             .fillMaxWidth()
             .padding(horizontal = 8.dp)
             .padding(bottom = 16.dp)
-            .clickable { onCatClick(cat.id) },
+            .clickable {
+                onCatClick(cat.id)
+                println("Kliknuto na macku sa id" + cat.id)
+            },
         colors = CardDefaults.cardColors(
             containerColor = Color(0xFFFFFFFF)
         )
@@ -183,45 +188,4 @@ fun CatCard(
     }
 }
 
-class CatListStateParameterProvider : PreviewParameterProvider<CatListContract.CatListState> {
-    override val values: Sequence<CatListContract.CatListState> = sequenceOf(
-        CatListContract.CatListState(
-            loading = false,
-            cats = listOf(
-                CatListUiModel(
-                    id = "abob",
-                    name = "American Bobtail",
-                    alt_names = "",
-                    description = "American Bobtails are loving and incredibly intelligent cats possessing a distinctive wild appearance. They are extremely interactive cats that bond with their human family with great devotion.",
-                    temperament = "Intelligent, Interactive, Lively"
-                ),
-                CatListUiModel(
-                    id = "mau",
-                    name = "American Bobtail",
-                    alt_names = "",
-                    description = "American Bobtails are loving and incredibly intelligent cats possessing a distinctive wild appearance. They are extremely interactive cats that bond with their human family with great devotion.",
-                    temperament = "Intelligent, Interactive, Lively"
-                ),
-                CatListUiModel(
-                    id = "tau",
-                    name = "American Bobtail",
-                    alt_names = "",
-                    description = "American Bobtails are loving and incredibly intelligent cats possessing a distinctive wild appearance. They are extremely interactive cats that bond with their human family with great devotion.",
-                    temperament = "Intelligent, Interactive, Lively"
-                ),
-            ),
-        ),
-    )
-}
 
-@Preview
-@Composable
-private fun PreviewCatsList(
-    @PreviewParameter(CatListStateParameterProvider::class) catListState: CatListContract.CatListState,
-) {
-    CatListScreen(
-        state = catListState,
-        eventPublisher = {},
-        onCatClick = {},
-    )
-}

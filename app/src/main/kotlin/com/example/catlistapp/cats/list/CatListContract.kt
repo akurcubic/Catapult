@@ -1,5 +1,6 @@
 package com.example.catlistapp.cats.list
 
+import com.example.catlistapp.cats.api.model.CatApiModel
 import com.example.catlistapp.cats.list.model.CatListUiModel
 
 interface CatListContract {
@@ -8,8 +9,8 @@ interface CatListContract {
         val loading: Boolean = false,
         val query: String = "",
         val isSearchMode: Boolean = false,
-        val cats: List<CatListUiModel> = emptyList(),
-        val filteredCats: List<CatListUiModel> = emptyList(),
+        val cats: List<CatApiModel> = emptyList(),
+        val filteredCats: List<CatApiModel> = emptyList(),
     )
 
     sealed class CatListUiEvent {

@@ -7,6 +7,6 @@ interface CatGalleryContract {
     data class CatGalleryState(
         val catId: String,
         val loading: Boolean = false,
-        val photos: List<CatGalleryUiModel> = emptyList()
+        val photos: List<String> = emptyList()
     )
 }

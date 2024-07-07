@@ -28,9 +28,11 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NamedNavArgument
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavType
@@ -44,22 +46,14 @@ import com.example.catlistapp.cats.details.model.CatDetailsUiModel
 fun NavGraphBuilder.catDetails(
     route: String,
     navController: NavController,
+    arguments: List<NamedNavArgument>,
     onGalleryButtonClick: (String) -> Unit,
 ) = composable(
     route = route,
-    arguments = listOf(navArgument("catId") { type = NavType.StringType })
-) { navBackStackEntry ->
-    val catId = navBackStackEntry.arguments?.getString("catId")
-        ?: throw IllegalArgumentException("catId is required.")
+    arguments = arguments) { navBackStackEntry ->
 
-    val catDetailsViewModel = viewModel<CatDetailsViewModel>(
-        factory = object : ViewModelProvider.Factory {
-            @Suppress("UNCHECKED_CAST")
-            override fun <T : ViewModel> create(modelClass: Class<T>): T {
-                return CatDetailsViewModel(catId = catId) as T
-            }
-        },
-    )
+
+    val catDetailsViewModel: CatDetailsViewModel = hiltViewModel(navBackStackEntry)
 
     val state = catDetailsViewModel.state.collectAsState()
     val context = LocalContext.current
@@ -160,7 +154,7 @@ fun CatDetailsScreen(
                         Spacer(modifier = Modifier.height(8.dp))
                         Text(buildBoldText("Life span: ", cat.life_span), style = MaterialTheme.typography.bodyLarge, color = Color.Black)
                         Spacer(modifier = Modifier.height(8.dp))
-                        Text(buildBoldText("Weight: ", cat.weight), style = MaterialTheme.typography.bodyLarge, color = Color.Black)
+                        Text(buildBoldText("Weight: ", cat.weight.metric), style = MaterialTheme.typography.bodyLarge, color = Color.Black)
                         Spacer(modifier = Modifier.height(8.dp))
                         Text(buildBoldText("Rare: ", if (cat.rare == 1) "Rare" else "Common"), style = MaterialTheme.typography.bodyLarge, color = Color.Black)
                         Spacer(modifier = Modifier.height(8.dp))
@@ -226,45 +220,45 @@ fun buildBoldText(boldText: String, normalText: String? = null): AnnotatedString
     }
 }
 
-class CatDetailsStateParameterProvider : PreviewParameterProvider<CatDetailsContract.CatDetailsState> {
-    override val values: Sequence<CatDetailsContract.CatDetailsState> = sequenceOf(
-        CatDetailsContract.CatDetailsState(
-            loading = false,
-            cat =
-                CatDetailsUiModel(
-                    id = "abob",
-                    name = "American Bobtail",
-                    alt_names = "",
-                    description = "American Bobtails are loving and incredibly intelligent cats possessing a distinctive wild appearance. They are extremely interactive cats that bond with their human family with great devotion.",
-                    temperament = "Intelligent, Interactive, Lively",
-                    origin = "United States",
-                    life_span = "11 - 15",
-                    adaptability = 5,
-                    affection_level = 4,
-                    stranger_friendly = 3,
-                    dog_friendly = 2,
-                    energy_level = 1,
-                    social_needs = 3,
-                    health_issues = 4,
-                    intelligence = 5,
-                    rare = 1,
-                    wikipedia_url = "https://en.wikipedia.org/wiki/American_Bobtail",
-                    reference_image_id = null,
-                    weight = "5 - 7"
-                ),
-        ),
-    )
-}
-
-@Preview
-@Composable
-private fun PreviewCatsList(
-    @PreviewParameter(CatDetailsStateParameterProvider::class) catDetailsState: CatDetailsContract.CatDetailsState,
-) {
-    CatDetailsScreen(
-        state = catDetailsState,
-        onClose = {},
-        context = LocalContext.current,
-        onGalleryButtonClick = {}
-    )
-}
+//class CatDetailsStateParameterProvider : PreviewParameterProvider<CatDetailsContract.CatDetailsState> {
+//    override val values: Sequence<CatDetailsContract.CatDetailsState> = sequenceOf(
+//        CatDetailsContract.CatDetailsState(
+//            loading = false,
+//            cat =
+//                CatDetailsUiModel(
+//                    id = "abob",
+//                    name = "American Bobtail",
+//                    alt_names = "",
+//                    description = "American Bobtails are loving and incredibly intelligent cats possessing a distinctive wild appearance. They are extremely interactive cats that bond with their human family with great devotion.",
+//                    temperament = "Intelligent, Interactive, Lively",
+//                    origin = "United States",
+//                    life_span = "11 - 15",
+//                    adaptability = 5,
+//                    affection_level = 4,
+//                    stranger_friendly = 3,
+//                    dog_friendly = 2,
+//                    energy_level = 1,
+//                    social_needs = 3,
+//                    health_issues = 4,
+//                    intelligence = 5,
+//                    rare = 1,
+//                    wikipedia_url = "https://en.wikipedia.org/wiki/American_Bobtail",
+//                    reference_image_id = null,
+//                    weight = "5 - 7"
+//                ),
+//        ),
+//    )
+//}
+//
+//@Preview
+//@Composable
+//private fun PreviewCatsList(
+//    @PreviewParameter(CatDetailsStateParameterProvider::class) catDetailsState: CatDetailsContract.CatDetailsState,
+//) {
+//    CatDetailsScreen(
+//        state = catDetailsState,
+//        onClose = {},
+//        context = LocalContext.current,
+//        onGalleryButtonClick = {}
+//    )
+//}

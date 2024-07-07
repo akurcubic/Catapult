@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.catlistapp.cats.api.model.CatApiModel
 import com.example.catlistapp.cats.list.model.CatListUiModel
 import com.example.catlistapp.cats.repository.CatsRepository
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -15,10 +16,12 @@ import kotlinx.coroutines.flow.filterIsInstance
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import javax.inject.Inject
 import kotlin.time.Duration.Companion.seconds
 
-class CatListViewModel (
-    private val repository: CatsRepository = CatsRepository,
+@HiltViewModel
+class CatListViewModel @Inject constructor(
+    private val repository: CatsRepository,
 ) : ViewModel(){
 
     private val _state = MutableStateFlow(CatListContract.CatListState())
@@ -30,6 +33,7 @@ class CatListViewModel (
     fun setEvent(event: CatListContract.CatListUiEvent) = viewModelScope.launch { events.emit(event) }
 
     init {
+        observeRepoCats()
         observeEvents()
         fetchAllCats()
         observeSearchQuery()
@@ -86,15 +90,24 @@ class CatListViewModel (
             setState { copy(loading = true) }
             try {
                 val cats = withContext(Dispatchers.IO) {
-                    repository.fetchAllCats().map { it.asCatListUiModel() }
+                    repository.fetchAllCatsFromApi()
                 }
                 println("CatListViewModel: Successfully fetched cats: $cats")
-                setState { copy(cats = cats) }
+
             } catch (error: Exception) {
                 println("CatListViewModel: Error fetching cats: $error")
                 // TODO Handle error
             } finally {
                 setState { copy(loading = false) }
+            }
+        }
+    }
+
+    private fun observeRepoCats() {
+        viewModelScope.launch {
+            setState { copy(loading = true) }
+            repository.getAllCatsFlow().collect { newCatsList ->
+                setState { copy(cats = newCatsList, loading = false) }
             }
         }
     }

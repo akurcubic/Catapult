@@ -119,6 +119,7 @@ android {
         vectorDrawables {
             useSupportLibrary = true
         }
+
     }
 
     room {

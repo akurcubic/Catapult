@@ -1,10 +1,15 @@
 package com.example.catlistapp.cats.api.model
 
+import androidx.room.Embedded
+import androidx.room.Entity
+import androidx.room.PrimaryKey
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
+@Entity(tableName = "cats")
 @Serializable
 data class CatApiModel (
+    @PrimaryKey
     val id: String,
     val name: String,
     val temperament: String,
@@ -23,6 +28,7 @@ data class CatApiModel (
     val rare: Int,
     val wikipedia_url: String?="ne postoji",
     var reference_image_id: String?=null,
+    @Embedded
     val weight: Weight,
 
     )
