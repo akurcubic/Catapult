@@ -1,10 +1,12 @@
 package com.example.catlistapp.cats.repository
 
 import com.example.catlistapp.cats.api.CatsApi
+import com.example.catlistapp.cats.api.ResultsApi
 import com.example.catlistapp.cats.api.model.CatApiModel
 import com.example.catlistapp.cats.dao.CatDao
 import com.example.catlistapp.cats.dao.CatGalleryDao
 import com.example.catlistapp.cats.entities.CatGallery
+import com.example.catlistapp.networking.dto.ResultDTO
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 import javax.inject.Named
@@ -15,27 +17,8 @@ class CatsRepository @Inject constructor(
     private val catDao: CatDao,
     private val catGalleryDao: CatGalleryDao,
     @Named("CatApi") private val catApi: CatsApi,
+    @Named("ResultApi") private val resultsApi: ResultsApi
 ){
-
-//    private val catsApi: CatsApi = retrofit.create(CatsApi::class.java)
-
-
-
-
-//    suspend fun fetchAllCats(): List<CatApiModel> {
-//        val cats = catsApi.getAllCats()
-//
-//        return cats
-//    }
-//
-//    suspend fun fetchCatDetails(id: String): CatApiModel{
-//
-//        val cat = catsApi.getCat(id)
-//
-//        return cat
-//    }
-//
-//    suspend fun getCatPhotos(catId: String) = catsApi.getCatImages(breedIds = catId)
 
     suspend fun fetchAllCatsFromApi() {
         catDao.insertAllCats(cats = catApi.getAllCats())
@@ -52,5 +35,14 @@ class CatsRepository @Inject constructor(
     }
 
     fun getAllCatImagesByIdFlow(id: String): Flow<List<String>> = catGalleryDao.getAllImagesForId(id)
+
+    suspend fun fetchAllResultsForCategory(category: Int): List<ResultDTO> {
+        return resultsApi.getAllResultsForCategory(category)
+    }
+
+    suspend fun postResult(nickname: String, result:Float, category: Int) {
+        val dto = ResultDTO(nickname,result,category)
+        resultsApi.postResult(dto)
+    }
 
 }

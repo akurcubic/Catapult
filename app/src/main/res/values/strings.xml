@@ -1,4 +1,4 @@
 <resources>
     <string name="app_name">CatListApp</string>
-    <string name="list_title">CatList</string>
+    <string name="list_title">Cat Breeds</string>
 </resources>

@@ -1,6 +1,7 @@
 package com.example.catlistapp.di
 
 import com.example.catlistapp.cats.api.CatsApi
+import com.example.catlistapp.cats.api.ResultsApi
 import com.example.catlistapp.networking.serialization.AppJson
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
 import dagger.Module
@@ -37,9 +38,7 @@ object ApiModule {
                     .build()
                 it.proceed(request)
             }
-            .addInterceptor(
-                httpLoggingInterceptor
-            )
+            .addInterceptor(httpLoggingInterceptor)
             .build()
 
     @Singleton
@@ -55,7 +54,7 @@ object ApiModule {
     @Provides
     @Named("ResultRetrofit")
     fun provideResultRetrofit(): Retrofit = Retrofit.Builder()
-        .baseUrl(" https://rma.finlab.rs/")
+        .baseUrl("https://rma.finlab.rs/")
         .addConverterFactory(AppJson.asConverterFactory("application/json".toMediaType()))
         .build()
 
@@ -67,5 +66,6 @@ object ApiModule {
     @Singleton
     @Provides
     @Named("ResultApi")
-    fun provideResultApi(@Named("ResultRetrofit") retrofit: Retrofit): CatsApi = retrofit.create(CatsApi::class.java)
+    fun provideResultApi(@Named("ResultRetrofit") retrofit: Retrofit): ResultsApi = retrofit.create(
+        ResultsApi::class.java)
 }
