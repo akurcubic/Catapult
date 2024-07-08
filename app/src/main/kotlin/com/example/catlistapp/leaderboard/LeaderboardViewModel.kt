@@ -37,6 +37,7 @@ class LeaderboardViewModel @Inject constructor(
             setLeaderboardState { copy(isLoading = true) }
             try {
                 val list = catsRepository.fetchAllResultsForCategory(category = categ)
+                println("Lista za leaderboard: $list")
                 setLeaderboardState { copy(results = list, nick = usersDataStore.data.value.nickname) }
             }catch (error: IOException){
                 setLeaderboardState { copy(error = LeaderboardContract.LeaderboardState.DetailsError.DataUpdateFailed(cause = error)) }

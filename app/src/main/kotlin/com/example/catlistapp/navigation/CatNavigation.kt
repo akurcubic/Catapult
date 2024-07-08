@@ -16,6 +16,7 @@ import com.example.catlistapp.cats.details.catDetails
 import com.example.catlistapp.cats.gallery.catGallery
 import com.example.catlistapp.cats.gallery.photo.catPhotoScreen
 import com.example.catlistapp.cats.list.cats
+import com.example.catlistapp.leaderboard.leaderboardScreen
 import com.example.catlistapp.profile.datastore.ProfileDataStore
 import com.example.catlistapp.profile.login
 import kotlinx.coroutines.launch
@@ -58,8 +59,8 @@ fun CatNavigation(profileDataStore: ProfileDataStore) {
                 onQuizClick = {
                     navController.navigate(route = "quiz")
                 },
-                onLeaderboardClick = {
-                    navController.navigate(route = "leaderboard")
+                onLeaderboardClick = {categoryId ->
+                    navController.navigate(route = "leaderboard/$categoryId")
                 }
             )
             catDetails(
@@ -97,6 +98,15 @@ fun CatNavigation(profileDataStore: ProfileDataStore) {
                 }, navArgument("photoIndex") {
                     type = NavType.IntType
                 }),
+            )
+            leaderboardScreen(
+                route = "leaderboard/{category}",
+                navController = navController,
+                arguments = listOf(
+                    navArgument("category") {
+                        type = NavType.IntType
+                    }
+                )
             )
         }
     }

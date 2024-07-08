@@ -48,7 +48,7 @@ fun NavGraphBuilder.cats(
     onCatClick: (String) -> Unit,
     onProfileClick: () -> Unit,
     onQuizClick: () -> Unit,
-    onLeaderboardClick: () -> Unit
+    onLeaderboardClick: (Int) -> Unit
 ) = composable(
     route = route
 ) {
@@ -84,7 +84,7 @@ fun NavGraphBuilder.cats(
                     uiScope.launch {
                         drawerState.close()
                     }
-                    onLeaderboardClick()
+                    onLeaderboardClick(it)
                 }
             )
         },
@@ -206,7 +206,7 @@ fun CatListScreen(
 private fun CatListDrawer(
     onProfileClick: () -> Unit,
     onQuizClick: () -> Unit,
-    onLeaderboardClick: () -> Unit,
+    onLeaderboardClick: (Int) -> Unit,
 ){
     BoxWithConstraints {
         ModalDrawerSheet (
@@ -285,7 +285,7 @@ private fun CatListDrawer(
                     AppDrawerActionItem(
                         icon = Icons.Default.Leaderboard,
                         text = "Leaderboard",
-                        onClick = onLeaderboardClick,
+                        onClick = {onLeaderboardClick(1)},
                         color = MaterialTheme.colorScheme.background
                     )
 
