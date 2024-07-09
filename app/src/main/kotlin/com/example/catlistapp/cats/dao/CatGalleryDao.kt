@@ -17,7 +17,15 @@ interface CatGalleryDao {
     @Query("select url from images where url = :url")
     fun getImageByUrl(url: String): Flow<String>
 
-
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertAllGalleryCats(cats: List<CatGallery>)
+
+    @Query("SELECT * FROM images")
+    suspend fun getAll(): List<CatGallery>
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insert(photo: CatGallery)
+
+    @Query("SELECT * FROM images WHERE id = :catId")
+    suspend fun getPhotosByCatId(catId: String): List<CatGallery>
 }

@@ -27,4 +27,9 @@ interface CatsApi {
     @GET("images/search?limit=20")
     suspend fun getAllCatsPhotos(@Query("breed_ids") id: String): List<CatGallery>
 
+    @GET("images/{photoId}")
+    suspend fun fetchPhotoById(
+        @Path("photoId") photoId: String,
+    ): CatApiGalleryModel
+
 }

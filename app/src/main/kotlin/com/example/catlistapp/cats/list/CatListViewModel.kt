@@ -111,14 +111,4 @@ class CatListViewModel @Inject constructor(
             }
         }
     }
-
-
-
-    private fun CatApiModel.asCatListUiModel() = CatListUiModel(
-        id = this.id,
-        name = this.name,
-        alt_names = this.alt_names,
-        description = this.description,
-        temperament =  this.temperament
-    )
 }

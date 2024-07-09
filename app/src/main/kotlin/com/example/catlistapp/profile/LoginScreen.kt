@@ -10,14 +10,14 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.CenterAlignedTopAppBar
+
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
-import androidx.compose.material3.TopAppBarDefaults
+
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
@@ -58,7 +58,7 @@ fun LoginScreen(
     onCreate: () -> Unit
 ) {
     Scaffold(
-        containerColor = Color.White,
+        containerColor = MaterialTheme.colorScheme.background,
         topBar = {},
         content = { paddingValues ->
             Column(
@@ -67,7 +67,7 @@ fun LoginScreen(
                     .padding(paddingValues)
                     .padding(top = 60.dp)
                     .padding(horizontal = 10.dp)
-                    .background(Color.White),
+                    .background(MaterialTheme.colorScheme.background),
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
@@ -83,68 +83,56 @@ fun LoginScreen(
                         .padding(top = 20.dp),
                     style = TextStyle(
                         fontSize = 35.sp,
-                        fontWeight = FontWeight.Bold
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.onBackground
                     ),
                     textAlign = TextAlign.Center
                 )
 
                 val textFieldColors = TextFieldDefaults.textFieldColors(
-                    focusedTextColor = Color.Black,
-                    unfocusedTextColor = Color.Black,
+                    focusedTextColor = MaterialTheme.colorScheme.onBackground,
+                    unfocusedTextColor = MaterialTheme.colorScheme.onBackground,
                     containerColor = Color.Transparent,
-                    unfocusedIndicatorColor = Color(0xffff6841),
-                    focusedIndicatorColor = Color(0xffff6841)
+                    unfocusedIndicatorColor = MaterialTheme.colorScheme.primary,
+                    focusedIndicatorColor = MaterialTheme.colorScheme.primary
                 )
 
 
                 TextField(
                     value = state.name,
                     onValueChange = { eventPublisher(LogInContract.LoginEvent.OnNameChange(it)) },
-                    label = { Text("Name") },
+                    label = { Text("Name", color = MaterialTheme.colorScheme.onBackground) },
                     isError = !state.isNameValid,
                     modifier = Modifier
                         .padding(top = 20.dp)
                         .fillMaxWidth(),
                     colors = textFieldColors
                 )
-                if (!state.isNameValid) {
-                    Text(text = "Name cannot be empty", color = MaterialTheme.colorScheme.error)
-                }
+
 
                 TextField(
                     value = state.nickname,
                     onValueChange = { eventPublisher(LogInContract.LoginEvent.OnNicknameChange(it)) },
-                    label = { Text("Nickname") },
+                    label = { Text("Nickname", color = MaterialTheme.colorScheme.onBackground) },
                     isError = !state.isNicknameValid,
                     modifier = Modifier
                         .padding(top = 20.dp)
                         .fillMaxWidth(),
                     colors = textFieldColors
                 )
-                if (!state.isNicknameValid) {
-                    Text(
-                        modifier = Modifier.align(Alignment.CenterHorizontally),
-                        text = "Nickname can only contain letters, numbers, and underscores",
-                        color = MaterialTheme.colorScheme.error
-                    )
-                }
+
 
                 TextField(
                     value = state.email,
                     onValueChange = { eventPublisher(LogInContract.LoginEvent.OnEmailChange(it)) },
-                    label = { Text("Email") },
+                    label = { Text("Email", color = MaterialTheme.colorScheme.onBackground) },
                     isError = !state.isEmailValid,
                     modifier = Modifier
                         .padding(top = 20.dp)
                         .fillMaxWidth(),
                     colors = textFieldColors
                 )
-                if (!state.isEmailValid) {
-                    Text(
-                        text = "Enter a valid email address",
-                        color = MaterialTheme.colorScheme.error
-                    )
-                }
+
 
                 Spacer(modifier = Modifier.height(16.dp))
                 Spacer(modifier = Modifier.height(16.dp))
@@ -160,8 +148,8 @@ fun LoginScreen(
                         .fillMaxWidth()
                         .padding(horizontal = 20.dp),
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = Color(0xffff6841),
-                        contentColor = Color.White
+                        containerColor = MaterialTheme.colorScheme.primary,
+                        contentColor = MaterialTheme.colorScheme.onPrimary
                     )
                 ) {
                     Text(
@@ -177,4 +165,5 @@ fun LoginScreen(
         }
     )
 }
+
 

@@ -19,6 +19,7 @@ import com.example.catlistapp.cats.list.cats
 import com.example.catlistapp.leaderboard.leaderboardScreen
 import com.example.catlistapp.profile.datastore.ProfileDataStore
 import com.example.catlistapp.profile.login
+import com.example.catlistapp.quiz.ui.quiz
 import kotlinx.coroutines.launch
 
 
@@ -107,6 +108,15 @@ fun CatNavigation(profileDataStore: ProfileDataStore) {
                         type = NavType.IntType
                     }
                 )
+            )
+            quiz(
+                route = "quiz",
+                onQuizCompleted = {
+                    navController.navigate(route = "cats")
+                },
+                onClose = {
+                    navController.navigateUp()
+                }
             )
         }
     }

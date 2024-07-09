@@ -4,8 +4,6 @@ import android.util.Log
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.catlistapp.cats.api.model.CatApiGalleryModel
-import com.example.catlistapp.cats.gallery.model.CatGalleryUiModel
 import com.example.catlistapp.cats.gallery.photo.catId
 import com.example.catlistapp.cats.repository.CatsRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -29,32 +27,14 @@ class CatGalleryViewModel @Inject constructor(
     private val catId: String = savedStateHandle.catId
     private val _state = MutableStateFlow(CatGalleryContract.CatGalleryState(catId = catId))
     val state = _state.asStateFlow()
-    private fun setState(reducer: CatGalleryContract.CatGalleryState.() -> CatGalleryContract.CatGalleryState) = _state.update(reducer)
+    private fun setState(reducer: CatGalleryContract.CatGalleryState.() -> CatGalleryContract.CatGalleryState) =
+        _state.update(reducer)
 
     init {
-//        fetchCatGallery()
+
         observeCatGallery()
 
     }
-
-//    private fun fetchCatGallery() {
-//        viewModelScope.launch {
-//            setState { copy(loading = true) }
-//            try {
-//                val catPhotos = withContext(Dispatchers.IO) {
-//                    catsRepository.getCatPhotos(catId = catId).map {it.asCatGalleryUiModel()}
-//                }
-//
-//                Log.d("CatGalleryViewModel", "Cat photos fetched: $catPhotos")
-//
-//                setState { copy(photos = catPhotos) }
-//            } catch (error: IOException) {
-//                Log.e("CatGalleryViewModel", "Error fetching photos: $error")
-//            } finally {
-//                setState { copy(loading = false) }
-//            }
-//        }
-//    }
 
     private fun observeCatGallery() {
 
@@ -62,12 +42,19 @@ class CatGalleryViewModel @Inject constructor(
             setState { copy(loading = true) }
             try {
                 var newPhotos = catsRepository.getAllCatImagesByIdFlow(id = catId).first()
-                if(newPhotos.isEmpty()) {
+                Log.d("Gallerija", "Slike za macku1 = $newPhotos")
+                if(newPhotos.size == 1) {
                     withContext(Dispatchers.IO) {
                         catsRepository.getAllCatsPhotosApi(id = catId)
+                        newPhotos = catsRepository.getAllCatImagesByIdFlow(id = catId).first()
+                        Log.d("Gallerija", "Slike za macku2 = $newPhotos")
                     }
-                    newPhotos = catsRepository.getAllCatImagesByIdFlow(id = catId).first()
                 }
+                else{
+                    newPhotos = catsRepository.getAllCatImagesByIdFlow(id = catId).first()
+                    Log.d("Gallerija", "Slike za macku3 = $newPhotos")
+                }
+                Log.d("Gallerija", "Slike za macku konacno = $newPhotos")
                 setState { copy(photos = newPhotos, loading = false) }
 
             }catch (error: IOException){
@@ -75,13 +62,6 @@ class CatGalleryViewModel @Inject constructor(
             }finally {
                 setState { copy(photos = photos, loading = false) }
             }
-
         }
     }
-
-    private fun CatApiGalleryModel.asCatGalleryUiModel() = CatGalleryUiModel(
-
-        id = this.id,
-        url = this.url
-    )
 }

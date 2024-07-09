@@ -1,5 +1,6 @@
 package com.example.catlistapp.cats.api
 
+import com.example.catlistapp.leaderboard.response.LeaderboardResponse
 import com.example.catlistapp.networking.dto.ResultDTO
 import retrofit2.http.Body
 import retrofit2.http.GET
@@ -12,5 +13,5 @@ interface ResultsApi {
     suspend fun getAllResultsForCategory(@Query("category") category: Int): List<ResultDTO>
 
     @POST("leaderboard")
-    suspend fun postResult(@Body obj:ResultDTO)
+    suspend fun postResult(@Body obj:ResultDTO): LeaderboardResponse
 }

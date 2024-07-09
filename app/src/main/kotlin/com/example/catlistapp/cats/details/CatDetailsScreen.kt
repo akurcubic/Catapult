@@ -38,6 +38,7 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavType
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
+import coil.compose.SubcomposeAsyncImage
 import coil.compose.rememberImagePainter
 import com.example.catlistapp.cats.details.model.CatDetailsUiModel
 
@@ -120,23 +121,34 @@ fun CatDetailsScreen(
                             .padding(16.dp)
                     ) {
                         // Prikaz slike macke
-                        state.cat.reference_image_id?.let { imageId ->
-                            Image(
-                                painter = rememberImagePainter(
-                                    data = "https://cdn2.thecatapi.com/images/$imageId.jpg",
-                                    builder = {
-                                        crossfade(true)
-                                    }
-                                ),
-                                contentDescription = "Cat image",
-                                modifier = Modifier
+//                        state.cat.reference_image_id?.let { imageId ->
+//                            Image(
+//                                painter = rememberImagePainter(
+//                                    data = "https://cdn2.thecatapi.com/images/$imageId.jpg",
+//                                    builder = {
+//                                        crossfade(true)
+//                                    }
+//                                ),
+//                                contentDescription = "Cat image",
+//                                modifier = Modifier
+//                                    .fillMaxWidth()
+//                                    .height(300.dp)
+//                                    .padding(bottom = 16.dp)
+//                                    .clip(shape = RoundedCornerShape(8.dp)),
+//                                contentScale = ContentScale.Crop
+//                            )
+//                        }
+
+                        SubcomposeAsyncImage(
+                            modifier = Modifier
                                     .fillMaxWidth()
                                     .height(300.dp)
                                     .padding(bottom = 16.dp)
                                     .clip(shape = RoundedCornerShape(8.dp)),
-                                contentScale = ContentScale.Crop
-                            )
-                        }
+                            contentScale = ContentScale.Crop,
+                            model = state.photo?.url,
+                            contentDescription = null,
+                        )
 
 
                         Text(buildBoldText("Description: ", cat.description), style = MaterialTheme.typography.bodyLarge, color = Color.Black)

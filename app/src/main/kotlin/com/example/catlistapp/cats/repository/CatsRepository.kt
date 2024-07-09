@@ -6,6 +6,8 @@ import com.example.catlistapp.cats.api.model.CatApiModel
 import com.example.catlistapp.cats.dao.CatDao
 import com.example.catlistapp.cats.dao.CatGalleryDao
 import com.example.catlistapp.cats.entities.CatGallery
+import com.example.catlistapp.leaderboard.response.LeaderboardResponse
+import com.example.catlistapp.mappers.asPhotoDbModel
 import com.example.catlistapp.networking.dto.ResultDTO
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
@@ -40,9 +42,19 @@ class CatsRepository @Inject constructor(
         return resultsApi.getAllResultsForCategory(category)
     }
 
-    suspend fun postResult(nickname: String, result:Float, category: Int) {
+    suspend fun postResult(nickname: String, result:Float, category: Int): LeaderboardResponse{
         val dto = ResultDTO(nickname,result,category)
-        resultsApi.postResult(dto)
+        return resultsApi.postResult(dto)
     }
+
+    suspend fun getAllCats() = catDao.getAll()
+
+    suspend fun getAllPhotos() = catGalleryDao.getAll()
+
+    suspend fun fetchPhoto(photoId: String, catId: String) {
+        val photo = catApi.fetchPhotoById(photoId = photoId).asPhotoDbModel(catId)
+        catGalleryDao.insert(photo)
+    }
+    suspend fun getPhotosByCatId(catId: String) = catGalleryDao.getPhotosByCatId(catId = catId)
 
 }

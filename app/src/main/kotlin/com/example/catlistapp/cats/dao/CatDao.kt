@@ -20,4 +20,7 @@ interface CatDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertAllCats(cats: List<CatApiModel>)
+
+    @Query("SELECT * FROM cats")
+    suspend fun getAll(): List<CatApiModel>
 }

@@ -11,5 +11,6 @@ data class CatGallery (
     @PrimaryKey
     val url: String,
     @Transient
+    //id macke
     val id: String = ""
 )
