@@ -1,7 +1,7 @@
 package com.example.catlistapp.leaderboard
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -19,6 +19,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -34,10 +35,9 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import com.example.catlistapp.cats.gallery.AppIconButton
 
-
 @OptIn(ExperimentalMaterial3Api::class)
 fun NavGraphBuilder.leaderboardScreen(
-    route : String,
+    route: String,
     navController: NavController,
     arguments: List<NamedNavArgument>,
 ) = composable(route = route, arguments = arguments) {
@@ -47,11 +47,15 @@ fun NavGraphBuilder.leaderboardScreen(
     Surface(
         tonalElevation = 1.dp
     ) {
-        Scaffold (
+        Scaffold(
             topBar = {
                 TopAppBar(
                     title = {
-                        Text(text = "Leaderboard", fontWeight = FontWeight.Bold)
+                        Text(
+                            text = "Leaderboard",
+                            fontWeight = FontWeight.Bold,
+                            color = MaterialTheme.colorScheme.tertiary
+                        )
                     },
                     navigationIcon = {
                         AppIconButton(
@@ -60,7 +64,10 @@ fun NavGraphBuilder.leaderboardScreen(
                                 navController.navigate("cats")
                             }
                         )
-                    }
+                    },
+                    colors = TopAppBarDefaults.topAppBarColors(
+                        containerColor = MaterialTheme.colorScheme.secondary
+                    )
                 )
             },
             content = {
@@ -75,65 +82,81 @@ fun NavGraphBuilder.leaderboardScreen(
 
 @Composable
 fun LeaderboardScreen(
-    state : LeaderboardContract.LeaderboardState,
+    state: LeaderboardContract.LeaderboardState,
     paddingValues: PaddingValues,
-
 ) {
+    if (state.isLoading) {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(paddingValues)
+                .background(MaterialTheme.colorScheme.background),
+            contentAlignment = Alignment.Center
+        ) {
+            CircularProgressIndicator()
+        }
+    } else if (state.error != null) {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(paddingValues)
+                .background(MaterialTheme.colorScheme.background),
+            contentAlignment = Alignment.Center
+        ) {
+            val errorMessage = when (state.error) {
+                is LeaderboardContract.LeaderboardState.DetailsError.DataUpdateFailed ->
+                    "Failed to load. Error message: ${state.error.cause?.message}."
+            }
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(paddingValues)
-    ) {
-        if (state.isLoading) {
-            Box(
-                modifier = Modifier.fillMaxSize(),
-                contentAlignment = Alignment.Center
-            ) {
-                CircularProgressIndicator(
-                    modifier = Modifier.align(Alignment.Center)
+            Text(
+                text = errorMessage,
+                fontSize = 20.sp,
+                color = MaterialTheme.colorScheme.tertiary
+            )
+        }
+    } else {
+        LazyColumn(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(paddingValues)
+                .background(MaterialTheme.colorScheme.background)
+        ) {
+            itemsIndexed(
+                items = state.results,
+            ) { index, user ->
+                val repeats = state.results.count { it.nickname == user.nickname }
+                ListItem(
+                    colors = if (state.nick == user.nickname)
+                        ListItemDefaults.colors(containerColor = MaterialTheme.colorScheme.background)
+                    else
+                        ListItemDefaults.colors(),
+                    headlineContent = {
+                        Text(
+                            text = user.nickname,
+                            color = MaterialTheme.colorScheme.tertiary
+                        )
+                    },
+                    supportingContent = {
+                        Text(
+                            "The number of quizzes played: $repeats",
+                            color = MaterialTheme.colorScheme.tertiary
+                        )
+                    },
+                    trailingContent = {
+                        Text(
+                            "${user.result} points",
+                            color = MaterialTheme.colorScheme.tertiary
+                        )
+                    },
+                    leadingContent = {
+                        Text(
+                            text = (index + 1).toString(),
+                            color = MaterialTheme.colorScheme.tertiary
+                        )
+                    }
                 )
-            }
-        }
-        else if (state.error != null) {
-            Box(
-                modifier = Modifier.fillMaxSize(),
-                contentAlignment = Alignment.Center
-            ) {
-                val errorMessage = when (state.error) {
-                    is LeaderboardContract.LeaderboardState.DetailsError.DataUpdateFailed ->
-                        "Failed to load. Error message: ${state.error.cause?.message}."
-                }
-
-                Text(text = errorMessage, fontSize = 20.sp)
-            }
-        }
-        else {
-            LazyColumn(
-                modifier = Modifier.fillMaxSize()
-            ) {
-                itemsIndexed(
-                    items = state.results,
-                ) {index,user ->
-                    val repeats = state.results.count { it.nickname == user.nickname }
-                    ListItem(
-                        colors = if(state.nick== user.nickname)
-                            ListItemDefaults.colors(containerColor = MaterialTheme.colorScheme.inversePrimary)
-                        else
-                            ListItemDefaults.colors(),
-
-                        headlineContent = { Text(text = user.nickname)},
-                        supportingContent = { Text("User shared result $repeats times") },
-                        trailingContent = { Text("${user.result} points") },
-                        leadingContent = {
-                            Text(text = (index+1).toString())
-                        }
-                    )
-                    HorizontalDivider()
-                }
+                HorizontalDivider()
             }
         }
     }
 }
-
-

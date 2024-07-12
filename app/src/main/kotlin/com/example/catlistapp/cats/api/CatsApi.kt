@@ -13,19 +13,8 @@ interface CatsApi {
     @GET("breeds")
     suspend fun getAllCats(): List<CatApiModel>
 
-    @GET("breeds/{breed_id}")
-    suspend fun getCat(
-        @Path("breed_id") id: String,
-    ): CatApiModel
-
-//    @GET("images/search")
-//    suspend fun getCatImages(
-//        @Query("limit") limit: Int = 10,
-//        @Query("breed_ids") breedIds: String
-//    ): List<CatApiGalleryModel>
-
     @GET("images/search?limit=20")
-    suspend fun getAllCatsPhotos(@Query("breed_ids") id: String): List<CatGallery>
+    suspend fun getAllCatPhotos(@Query("breed_ids") id: String): List<CatGallery>
 
     @GET("images/{photoId}")
     suspend fun fetchPhotoById(

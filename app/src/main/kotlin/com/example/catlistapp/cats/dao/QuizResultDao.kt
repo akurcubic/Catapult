@@ -21,4 +21,8 @@ interface QuizResultDao {
 
     @Query("SELECT MIN(ranking) FROM quiz_results WHERE nickname = :nickname")
     suspend fun getBestRanking(nickname: String): Int?
+
+    @Query("UPDATE quiz_results SET nickname = :newNickname WHERE nickname = :oldNickname")
+    suspend fun updateNickname(oldNickname: String, newNickname: String)
+
 }

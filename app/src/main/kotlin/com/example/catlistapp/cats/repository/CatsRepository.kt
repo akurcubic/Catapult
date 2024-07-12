@@ -30,13 +30,11 @@ class CatsRepository @Inject constructor(
 
     fun getCatByIdFlow(id: String): Flow<CatApiModel> = catDao.getCatById(id)
 
-    suspend fun getAllCatsPhotosApi(id: String): List<CatGallery> {
-        val images = catApi.getAllCatsPhotos(id).map { it.copy(id = id) }
+    suspend fun getAllCatPhotosApi(id: String): List<CatGallery> {
+        val images = catApi.getAllCatPhotos(id).map { it.copy(id = id) }
         catGalleryDao.insertAllGalleryCats(cats = images)
         return images
     }
-
-    fun getAllCatImagesByIdFlow(id: String): Flow<List<String>> = catGalleryDao.getAllImagesForId(id)
 
     suspend fun fetchAllResultsForCategory(category: Int): List<ResultDTO> {
         return resultsApi.getAllResultsForCategory(category)
@@ -55,6 +53,6 @@ class CatsRepository @Inject constructor(
         val photo = catApi.fetchPhotoById(photoId = photoId).asPhotoDbModel(catId)
         catGalleryDao.insert(photo)
     }
-    suspend fun getPhotosByCatId(catId: String) = catGalleryDao.getPhotosByCatId(catId = catId)
+   fun getPhotosByCatId(catId: String) = catGalleryDao.getPhotosByCatId(catId = catId)
 
 }

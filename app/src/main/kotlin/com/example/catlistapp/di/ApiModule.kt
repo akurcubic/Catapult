@@ -16,7 +16,9 @@ import javax.inject.Named
 import javax.inject.Singleton
 
 @Module
+//označava da će se zavisnosti definisane u ovom modulu koristiti u celom aplikacionom kontekstu (SingletonComponent).
 @InstallIn(SingletonComponent::class)
+
 object ApiModule {
     @Singleton
     @Provides

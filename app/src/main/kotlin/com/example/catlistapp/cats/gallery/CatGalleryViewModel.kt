@@ -10,11 +10,12 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.distinctUntilChanged
+
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import java.io.IOException
+
 import javax.inject.Inject
 
 @HiltViewModel
@@ -32,36 +33,34 @@ class CatGalleryViewModel @Inject constructor(
 
     init {
 
-        observeCatGallery()
+        fetchCatGallery()
+        observePhotos()
 
     }
 
-    private fun observeCatGallery() {
-
+    private fun fetchCatGallery() {
         viewModelScope.launch {
             setState { copy(loading = true) }
             try {
-                var newPhotos = catsRepository.getAllCatImagesByIdFlow(id = catId).first()
-                Log.d("Gallerija", "Slike za macku1 = $newPhotos")
-                if(newPhotos.size == 1) {
-                    withContext(Dispatchers.IO) {
-                        catsRepository.getAllCatsPhotosApi(id = catId)
-                        newPhotos = catsRepository.getAllCatImagesByIdFlow(id = catId).first()
-                        Log.d("Gallerija", "Slike za macku2 = $newPhotos")
-                    }
+                withContext(Dispatchers.IO) {
+                    catsRepository.getAllCatPhotosApi(id = catId)
+                    Log.e("FETCH", "Fetch Photos")
                 }
-                else{
-                    newPhotos = catsRepository.getAllCatImagesByIdFlow(id = catId).first()
-                    Log.d("Gallerija", "Slike za macku3 = $newPhotos")
-                }
-                Log.d("Gallerija", "Slike za macku konacno = $newPhotos")
-                setState { copy(photos = newPhotos, loading = false) }
-
-            }catch (error: IOException){
-                println(error)
-            }finally {
-                setState { copy(photos = photos, loading = false) }
+            } catch (error: Exception) {
+                Log.d("FETCH", "Fetch Photos Error", error)
             }
+            setState { copy(loading = false) }
         }
     }
+
+    private fun observePhotos() {
+        viewModelScope.launch {
+            catsRepository.getPhotosByCatId(catId = catId)
+                .distinctUntilChanged()
+                .collect {
+                    setState { copy(photos = it) }
+                }
+        }
+    }
+
 }

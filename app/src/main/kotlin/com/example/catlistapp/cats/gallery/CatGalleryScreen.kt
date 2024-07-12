@@ -1,20 +1,16 @@
 package com.example.catlistapp.cats.gallery
 
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.itemsIndexed
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -27,45 +23,30 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.tooling.preview.Preview
 
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NamedNavArgument
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import coil.compose.SubcomposeAsyncImage
+import com.example.catlistapp.cats.entities.CatGallery
 
-import com.example.catlistapp.cats.gallery.model.CatGalleryUiModel
-import com.example.catlistapp.core.ourcomp.PhotoPreview
 
 fun NavGraphBuilder.catGallery(
     route: String,
     arguments: List<NamedNavArgument>,
-    // proveri da li se prosledju id od macke ili sta vec, trenutno se prosldjuje id slike
     onPhotoClick: (catId: String, photoIndex: Int) -> Unit,
     onClose: () -> Unit,
 ) = composable(
     route = route,
     arguments = arguments,
 ) { navBackStackEntry ->
-//    val catId = navBackStackEntry.arguments?.getString("catId")
-//        ?: throw IllegalStateException("catId required")
-//
-//    val catGalleryViewModel = viewModel<CatGalleryViewModel>(
-//        factory = object : ViewModelProvider.Factory {
-//            @Suppress("UNCHECKED_CAST")
-//            override fun <T : ViewModel> create(modelClass: Class<T>): T {
-//                return CatGalleryViewModel(catId = catId) as T
-//            }
-//        }
-//    )
 
     val catGalleryViewModel: CatGalleryViewModel = hiltViewModel(navBackStackEntry)
 
@@ -111,23 +92,33 @@ fun CatGalleryScreen(
                     columns = GridCells.Fixed(2),
                     contentPadding = paddingValues
                 ) {
-
-                    itemsIndexed(items = state.photos,
-                        key = { index: Int, item: String ->
-                            item
-                        }){index: Int, item: String ->
+                    itemsIndexed(
+                        items = state.photos,
+                        key = { index: Int, item: CatGallery ->
+                            item.url
+                        }
+                    ) { index: Int, item: CatGallery ->
                         SubcomposeAsyncImage(
-                            modifier =  Modifier.fillMaxWidth().aspectRatio(1f).clickable {
-                                onPhotoClick(state.catId,index)
-                            },
-                            model = item,
+                            model = item.url,
                             contentDescription = null,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .aspectRatio(1f)
+                                .clip(RectangleShape)
+                                .clickable {
+                                    onPhotoClick(state.catId, index)
+                                },
                             contentScale = ContentScale.Crop,
                             loading = {
                                 Box(modifier = Modifier.fillMaxSize()) {
                                     CircularProgressIndicator(
                                         modifier = Modifier.align(Alignment.Center)
                                     )
+                                }
+                            },
+                            error = {
+                                Box(modifier = Modifier.fillMaxSize()) {
+                                    // Display some error UI if needed
                                 }
                             }
                         )

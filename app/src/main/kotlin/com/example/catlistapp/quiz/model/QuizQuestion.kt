@@ -1,6 +1,5 @@
-package raf.rma.catapult.quiz.model
+package com.example.catlistapp.quiz.model
 
-import com.example.catlistapp.quiz.model.QuestionType
 
 data class QuizQuestion(
     val question: String,

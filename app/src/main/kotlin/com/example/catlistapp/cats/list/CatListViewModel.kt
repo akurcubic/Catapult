@@ -2,8 +2,6 @@ package com.example.catlistapp.cats.list
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.catlistapp.cats.api.model.CatApiModel
-import com.example.catlistapp.cats.list.model.CatListUiModel
 import com.example.catlistapp.cats.repository.CatsRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -12,6 +10,7 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filterIsInstance
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -106,7 +105,9 @@ class CatListViewModel @Inject constructor(
     private fun observeRepoCats() {
         viewModelScope.launch {
             setState { copy(loading = true) }
-            repository.getAllCatsFlow().collect { newCatsList ->
+            repository.getAllCatsFlow()
+                .distinctUntilChanged()
+                .collect { newCatsList ->
                 setState { copy(cats = newCatsList, loading = false) }
             }
         }

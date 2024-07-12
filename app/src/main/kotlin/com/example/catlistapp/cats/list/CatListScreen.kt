@@ -1,12 +1,13 @@
 package com.example.catlistapp.cats.list
 
 import androidx.activity.compose.BackHandler
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Leaderboard
 import androidx.compose.material.icons.filled.Menu
@@ -58,6 +59,8 @@ fun NavGraphBuilder.cats(
 
     val uiScope = rememberCoroutineScope()
     val drawerState: DrawerState = rememberDrawerState(DrawerValue.Closed)
+
+
 
     BackHandler(enabled = drawerState.isOpen){
         uiScope.launch { drawerState.close() }
@@ -115,92 +118,93 @@ fun CatListScreen(
     onDrawerMenuClick: () -> Unit,
 ) {
 
-    var searchText by remember{ mutableStateOf("")}
+    var searchText by remember { mutableStateOf("") }
 
-    if(searchText.isEmpty()){
+    if (searchText.isEmpty()) {
         eventPublisher(CatListContract.CatListUiEvent.CloseSearchMode)
     }
 
-            Scaffold(
-                topBar = {
-                    CenterAlignedTopAppBar(
-                        title = {
-                            Text(
-                                text = stringResource(id = R.string.list_title),
-                                color = Color.White
-                            )
-                        },
-                        colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
-                            containerColor = Color(0xFF6200EE)
-                        ),
-                        navigationIcon = {
-                            AppIconButton(
-                                imageVector = Icons.Default.Menu,
-                                onClick = onDrawerMenuClick,
-                            )
-                        }
+
+    Scaffold(
+        topBar = {
+            CenterAlignedTopAppBar(
+                title = {
+                    Text(
+                        text = stringResource(id = R.string.list_title),
+                        color = MaterialTheme.colorScheme.tertiary
                     )
                 },
-            ) { paddingValues ->
-                if (state.loading) {
-                    Box(
-                        modifier = Modifier.fillMaxSize(),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        CircularProgressIndicator()
-                    }
-                } else {
+                colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
+                    containerColor = MaterialTheme.colorScheme.secondary
+                ),
+                navigationIcon = {
+                    AppIconButton(
+                        imageVector = Icons.Default.Menu,
+                        onClick = onDrawerMenuClick,
+                    )
+                }
+            )
+        },
 
-                    Column(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .padding(paddingValues)
-                            .verticalScroll(rememberScrollState())
-                            .background(Color(0xFFF0E7FF))
-                    ) {
-
-                        OutlinedTextField(
-                            value = searchText,
-                            onValueChange = {
-                                searchText = it
-                                if (it.isEmpty()) {
-                                    eventPublisher(CatListContract.CatListUiEvent.CloseSearchMode)
-                                } else {
-                                    eventPublisher(
-                                        CatListContract.CatListUiEvent.SearchQueryChanged(
-                                            it
-                                        )
-                                    )
-                                }
-                            },
-                            label = { Text("Search cats") },
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(vertical = 8.dp, horizontal = 16.dp),
-                            leadingIcon = {
-                                Icon(
-                                    imageVector = Icons.Default.Search,
-                                    contentDescription = "Search icon",
-                                    tint = Color.Gray
-                                )
-                            },
-                            textStyle = TextStyle(color = Color.Black),
-                        )
-
-                        if (state.isSearchMode) {
-
-                            state.filteredCats.forEach { cat ->
-                                CatCard(cat = cat, onCatClick = onCatClick)
-                            }
+    ) { paddingValues ->
+        if (state.loading) {
+            Box(
+                modifier = Modifier.fillMaxSize(),
+                contentAlignment = Alignment.Center
+            ) {
+                CircularProgressIndicator()
+            }
+        } else {
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(paddingValues)
+                    .background(MaterialTheme.colorScheme.background)
+            ) {
+                OutlinedTextField(
+                    value = searchText,
+                    onValueChange = {
+                        searchText = it
+                        if (it.isEmpty()) {
+                            eventPublisher(CatListContract.CatListUiEvent.CloseSearchMode)
                         } else {
-                            state.cats.forEach { cat ->
-                                CatCard(cat = cat, onCatClick = onCatClick)
-                            }
+                            eventPublisher(
+                                CatListContract.CatListUiEvent.SearchQueryChanged(
+                                    it
+                                )
+                            )
                         }
+                    },
+                    label = { Text("Search cats") },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 8.dp, horizontal = 16.dp)
+                        .background(MaterialTheme.colorScheme.background),
+                    leadingIcon = {
+                        Icon(
+                            imageVector = Icons.Default.Search,
+                            contentDescription = "Search icon",
+                            tint = Color.Gray
+                        )
+                    },
+                    textStyle = TextStyle(MaterialTheme.colorScheme.tertiary),
+                )
+
+                LazyColumn(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(MaterialTheme.colorScheme.background)
+                ) {
+                    val cats = if (state.isSearchMode) state.filteredCats else state.cats
+                    items(cats) { cat ->
+                        CatCard(cat = cat, onCatClick = onCatClick)
                     }
                 }
             }
+        }
+    }
 }
+
 
 @Composable
 private fun CatListDrawer(
@@ -220,6 +224,12 @@ private fun CatListDrawer(
                         .height(200.dp),
                     contentAlignment = Alignment.BottomStart
                 ){
+
+                    Image(
+                        painter = painterResource(id = R.drawable.cat_logo),
+                        contentDescription = "logo",
+                        modifier = Modifier.align(Alignment.Center)
+                    )
                     Text(
                         modifier = Modifier
                             .padding(top = 90.dp)
@@ -232,14 +242,9 @@ private fun CatListDrawer(
                             color = MaterialTheme.colorScheme.tertiary
                         )
                     )
-                    Image(
-                        painter = painterResource(id = R.drawable.cat_logo),
-                        contentDescription = "logo",
-                        modifier = Modifier.align(Alignment.Center)
-                    )
+
                     HorizontalDivider(
                         modifier = Modifier
-//                            .padding(bottom = 5.dp)
                             .fillMaxWidth(),
                         color = MaterialTheme.colorScheme.primary
                     )
@@ -269,7 +274,7 @@ private fun CatListDrawer(
 
                         },
                         colors = NavigationDrawerItemDefaults.colors(
-                            selectedContainerColor = MaterialTheme.colorScheme.primary,
+                            selectedContainerColor = MaterialTheme.colorScheme.secondary,
                             selectedTextColor = Color.White,
                             selectedIconColor = Color.White
                         )
@@ -341,8 +346,9 @@ fun CatCard(
                 println("Kliknuto na macku sa id" + cat.id)
             },
         colors = CardDefaults.cardColors(
-            containerColor = Color(0xFFFFFFFF)
-        )
+            containerColor = MaterialTheme.colorScheme.secondary
+        ),
+        border = BorderStroke(2.dp, MaterialTheme.colorScheme.tertiary)
     ) {
         Column(
             modifier = Modifier.padding(16.dp)
@@ -350,13 +356,13 @@ fun CatCard(
             Text(
                 text = cat.name,
                 style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold),
-                color = Color.Black
+                color = MaterialTheme.colorScheme.tertiary
             )
 
             Text(
                 text = cat.description.take(250),
                 style = MaterialTheme.typography.bodyLarge,
-                color = Color.Black,
+                color = MaterialTheme.colorScheme.tertiary,
                 modifier = Modifier.padding(vertical = 8.dp)
             )
 
@@ -367,7 +373,7 @@ fun CatCard(
                 temperaments.forEach { temperament ->
                     SuggestionChip(
                         onClick = {},
-                        label = { Text(text = temperament, color = Color.Black) },
+                        label = { Text(text = temperament, color = MaterialTheme.colorScheme.tertiary)},
                         modifier = Modifier.padding(end = 8.dp)
                     )
                 }

@@ -1,6 +1,6 @@
 package com.example.catlistapp.quiz.ui
 
-import raf.rma.catapult.quiz.model.QuizQuestion
+import com.example.catlistapp.quiz.model.QuizQuestion
 
 interface QuizContract {
     data class QuizState(

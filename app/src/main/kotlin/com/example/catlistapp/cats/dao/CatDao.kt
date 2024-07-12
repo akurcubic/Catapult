@@ -4,7 +4,6 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
-import com.example.catlistapp.cats.api.CatsApi
 import com.example.catlistapp.cats.api.model.CatApiModel
 import kotlinx.coroutines.flow.Flow
 

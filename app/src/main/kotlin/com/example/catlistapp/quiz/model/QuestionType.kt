@@ -2,6 +2,6 @@ package com.example.catlistapp.quiz.model
 
 enum class QuestionType {
     CAT_NAME,
-    CAT_ORIGIN,
+    NOT_CAT_TEMPERAMENT,
     CAT_TEMPERAMENT
 }

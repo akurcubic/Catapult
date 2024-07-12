@@ -18,13 +18,16 @@ import com.example.catlistapp.cats.gallery.photo.catPhotoScreen
 import com.example.catlistapp.cats.list.cats
 import com.example.catlistapp.leaderboard.leaderboardScreen
 import com.example.catlistapp.profile.datastore.ProfileDataStore
+
 import com.example.catlistapp.profile.login
 import com.example.catlistapp.quiz.ui.quiz
 import kotlinx.coroutines.launch
+import com.example.catlistapp.profile.edit.profile
 
 
 @Composable
 fun CatNavigation(profileDataStore: ProfileDataStore) {
+
     val navController = rememberNavController()
 
     val isProfileEmpty by profileDataStore.isEmpty.collectAsState(initial = true)
@@ -49,6 +52,7 @@ fun CatNavigation(profileDataStore: ProfileDataStore) {
                     navController.navigate(route = "cats")
                 }
             )
+
             cats(
                 route = "cats",
                 onCatClick = { catId ->
@@ -64,6 +68,7 @@ fun CatNavigation(profileDataStore: ProfileDataStore) {
                     navController.navigate(route = "leaderboard/$categoryId")
                 }
             )
+
             catDetails(
                 route = "cat_details/{id}",
                 arguments = listOf(navArgument("id") {
@@ -100,6 +105,7 @@ fun CatNavigation(profileDataStore: ProfileDataStore) {
                     type = NavType.IntType
                 }),
             )
+
             leaderboardScreen(
                 route = "leaderboard/{category}",
                 navController = navController,
@@ -109,14 +115,27 @@ fun CatNavigation(profileDataStore: ProfileDataStore) {
                     }
                 )
             )
+
             quiz(
                 route = "quiz",
                 onQuizCompleted = {
                     navController.navigate(route = "cats")
                 },
                 onClose = {
-                    navController.navigateUp()
+                    navController.navigate(route = "cats")
                 }
+            )
+            profile(
+                route = "profile",
+                onCatalogClick = {
+                    navController.navigate(route = "cats")
+                },
+                onQuizClick = {
+                    navController.navigate(route = "quiz")
+                },
+                onLeaderboardClick = {
+                    navController.navigate(route = "leaderboard/1")
+                },
             )
         }
     }

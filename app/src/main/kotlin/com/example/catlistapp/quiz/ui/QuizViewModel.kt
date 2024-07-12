@@ -23,10 +23,9 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-
 import com.example.catlistapp.quiz.ui.QuizContract.QuizEvent
 import com.example.catlistapp.quiz.ui.QuizContract.QuizState
-import raf.rma.catapult.quiz.model.QuizQuestion
+import com.example.catlistapp.quiz.model.QuizQuestion
 import java.util.Date
 import javax.inject.Inject
 
@@ -98,8 +97,14 @@ class QuizViewModel @Inject constructor(
                     }
 
                     is QuizEvent.FinishQuiz -> finishQuiz()
-                    is QuizEvent.OptionSelected -> submitAnswer(state.value.questions[state.value.currentQuestionIndex].incorrectAnswers[event.optionIndex])
+                    is QuizEvent.OptionSelected -> {
+
+                        val selectedOption = state.value.questions[state.value.currentQuestionIndex].options[event.optionIndex]
+                        submitAnswer(selectedOption)
+
+                    }
                     is QuizEvent.PublishScore -> publish()
+                    else -> {}
                 }
             }
         }
@@ -132,7 +137,6 @@ class QuizViewModel @Inject constructor(
             )
         }
     }
-
 
 
     fun submitAnswer(option: String) {
@@ -250,6 +254,7 @@ class QuizViewModel @Inject constructor(
             var photos = catsRepository.getAllPhotos().filter { it.id == cat.id }.shuffled()
 
             if (photos.isEmpty()) {
+
                 try {
                     cat.reference_image_id?.let { catsRepository.fetchPhoto(it, cat.id) }
                 } catch (error: Exception) {
@@ -328,7 +333,7 @@ class QuizViewModel @Inject constructor(
                     correctAnswer = correctAnswer,
                     incorrectAnswers = incorrectAnswers,
                     imageUrl = photos.first().url,
-                    questionType = QuestionType.CAT_TEMPERAMENT,
+                    questionType = QuestionType.NOT_CAT_TEMPERAMENT,
                     options = (incorrectAnswers + correctAnswer).shuffled()
                 )
             )

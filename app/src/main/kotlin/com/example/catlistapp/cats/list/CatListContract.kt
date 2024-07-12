@@ -1,7 +1,7 @@
 package com.example.catlistapp.cats.list
 
 import com.example.catlistapp.cats.api.model.CatApiModel
-import com.example.catlistapp.cats.list.model.CatListUiModel
+
 
 interface CatListContract {
 
@@ -16,6 +16,5 @@ interface CatListContract {
     sealed class CatListUiEvent {
         data class SearchQueryChanged(val query: String) : CatListUiEvent()
         data object CloseSearchMode : CatListUiEvent()
-
     }
 }

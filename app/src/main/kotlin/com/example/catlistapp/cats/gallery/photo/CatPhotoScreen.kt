@@ -121,7 +121,7 @@ fun CatPhotoScreen(
 
                     SubcomposeAsyncImage(
                         modifier = Modifier.fillMaxSize(),
-                        model = photo,
+                        model = photo.url,
                         contentDescription = null,
                         contentScale = ContentScale.FillWidth,
                     )

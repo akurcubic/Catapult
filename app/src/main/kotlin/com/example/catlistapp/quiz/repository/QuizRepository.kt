@@ -17,4 +17,8 @@ class QuizRepository @Inject constructor(
 
     suspend fun getBestPosition(userId: String) = database.quizResultDao().getBestRanking(userId)
 
+    suspend fun updateNickname(oldNickname: String, newNickname: String) {
+        database.quizResultDao().updateNickname(oldNickname, newNickname)
+    }
+
 }

@@ -39,7 +39,7 @@ class CatPhotoViewModel @Inject constructor(
         viewModelScope.launch {
             setCatPhotoState { copy(isLoading = true) }
             try {
-                catsRepository.getAllCatImagesByIdFlow(id = catId).collect { photos ->
+                catsRepository.getPhotosByCatId(catId = catId).collect { photos ->
                     setCatPhotoState { copy(photos = photos, isLoading = false) }
                 }
             }catch (error: IOException){
